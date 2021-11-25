@@ -20,7 +20,28 @@ namespace SSN
         {
             if (!Regex.IsMatch(ToString(), "[0-9]{11}", RegexOptions.Singleline))
                 return false;
+            if (!IsCheckDigitValid())
+                return false;
             return true;
+        }
+
+        public bool IsCheckDigitValid()
+        {
+            var c1 = 11 - ((3 * GetDigit(0) + 7 * GetDigit(1) + 6 * GetDigit(2) + 1 * GetDigit(3) + 8 * GetDigit(4) + 9 * GetDigit(5) + 4 * GetDigit(6) + 5 * GetDigit(7) + 2 * GetDigit(8)) % 11);
+            var c2 = 11 - ((5 * GetDigit(0) + 4 * GetDigit(1) + 3 * GetDigit(2) + 2 * GetDigit(3) + 7 * GetDigit(4) + 6 * GetDigit(5) + 5 * GetDigit(6) + 4 * GetDigit(7) + 3 * GetDigit(8) + 2 * c1) % 11);
+
+            if (c1 == 11) // special rule
+                c1 = 0;
+            if (c2 == 11)
+                c2 = 0; 
+
+            int.TryParse($"{c1}{c2}", out int expected);
+            return CheckDigit == expected;
+        }
+
+        private int GetDigit(int index)
+        {
+            return Convert.ToInt32(ToString().Substring(index, 1));
         }
 
         private void Parse(string ssn)
