@@ -11,14 +11,17 @@ namespace SSN
         public int? IndividualNumber { get; private set; }
         public int? CheckDigit { get; private set; }
         public Gender Gender { get; private set; }
+
+        private readonly string _ssn;
         public Personnummer(string ssn)
         {
+            _ssn = ssn;
             Parse(ssn);
         }
 
         public bool IsValid()
         {
-            if (!Regex.IsMatch(ToString(), "[0-9]{11}", RegexOptions.Singleline))
+            if (!Regex.IsMatch(_ssn, "[0-9]{11}", RegexOptions.Singleline))
                 return false;
             if (!IsCheckDigitValid())
                 return false;
@@ -41,7 +44,7 @@ namespace SSN
 
         private int GetDigit(int index)
         {
-            return Convert.ToInt32(ToString().Substring(index, 1));
+            return Convert.ToInt32(_ssn.Substring(index, 1));
         }
 
         private void Parse(string ssn)
