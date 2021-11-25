@@ -11,6 +11,7 @@ namespace SSN
         public int? IndividualNumber { get; private set; }
         public int? CheckDigit { get; private set; }
         public Gender Gender { get; private set; }
+        public DateOnly Birth => GetBirth();
 
         private readonly string _ssn;
         public Personnummer(string ssn)
@@ -45,6 +46,20 @@ namespace SSN
         private int GetDigit(int index)
         {
             return Convert.ToInt32(_ssn.Substring(index, 1));
+        }
+
+        private DateOnly GetBirth()
+        {
+            string yearHundred = string.Empty;
+            if (IndividualNumber >= 900 && IndividualNumber < 1000)
+                yearHundred = "19";
+            if (IndividualNumber >= 500 && IndividualNumber < 1000)
+                yearHundred = "20";
+            if (IndividualNumber >= 500 && IndividualNumber < 750)
+                yearHundred = "18";
+            if (IndividualNumber >= 0 && IndividualNumber < 500)
+                yearHundred = "19";
+            return DateOnly.Parse($"{Day}.{Month}.{yearHundred}{Year?.ToString("D2")}");
         }
 
         private void Parse(string ssn)
