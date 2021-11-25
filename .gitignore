@@ -3,3 +3,4 @@ obj
 debug
 release
 *.DotSettings.user
+.vs

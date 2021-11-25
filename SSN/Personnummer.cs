@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 
 namespace SSN
 {
@@ -9,6 +10,7 @@ namespace SSN
         public int? Year { get; private set; }
         public int? IndividualNumber { get; private set; }
         public int? CheckDigit { get; private set; }
+        public Gender Gender { get; private set; }
         public Personnummer(string ssn)
         {
             Parse(ssn);
@@ -35,6 +37,10 @@ namespace SSN
                     IndividualNumber = individualNumber;
                 if (int.TryParse(ssn.Substring(9, 2), out var checkDigit))
                     CheckDigit = checkDigit;
+
+                if (int.TryParse(ssn.Substring(9, 1), out var genderDigit))
+                    Gender = genderDigit % 2 == 0 ? Gender.Male : Gender.Female;
+
             }
         }
 
