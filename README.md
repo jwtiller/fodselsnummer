@@ -1,1 +1,1 @@
-# personnummer
+# Norske fødselsnummer

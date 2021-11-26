@@ -2,9 +2,9 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace SSN
+namespace Fnr
 {
-    public record Personnummer
+    public record Fodselsnummer
     {
         public int? Day { get; private set; }
         public int? Month { get; private set; }
@@ -14,16 +14,16 @@ namespace SSN
         public Gender Gender { get; private set; }
         public DateOnly Birth => GetBirth();
 
-        private readonly string _ssn;
-        public Personnummer(string ssn)
+        private readonly string _fodselsnummer;
+        public Fodselsnummer(string fodselsnummer)
         {
-            _ssn = ssn;
-            Parse(ssn);
+            _fodselsnummer = fodselsnummer;
+            Parse(fodselsnummer);
         }
 
         public bool IsValid()
         {
-            if (!Regex.IsMatch(_ssn, "[0-9]{11}", RegexOptions.Singleline))
+            if (!Regex.IsMatch(_fodselsnummer, "[0-9]{11}", RegexOptions.Singleline))
                 return false;
             if (!IsCheckDigitValid())
                 return false;
@@ -46,7 +46,7 @@ namespace SSN
 
         private int GetDigit(int index)
         {
-            return Convert.ToInt32(_ssn.Substring(index, 1));
+            return Convert.ToInt32(_fodselsnummer.Substring(index, 1));
         }
 
         private DateOnly GetBirth()
@@ -63,22 +63,22 @@ namespace SSN
             return DateOnly.ParseExact($"{Day?.ToString("D2")}.{Month?.ToString("D2")}.{yearHundred}{Year?.ToString("D2")}", "dd.MM.yyyy", CultureInfo.InvariantCulture);
         }
 
-        private void Parse(string ssn)
+        private void Parse(string fodselsNummer)
         {
-            if (Regex.IsMatch(ssn, "[0-9]{11}",RegexOptions.Singleline))
+            if (Regex.IsMatch(fodselsNummer, "[0-9]{11}",RegexOptions.Singleline))
             {
-                if (int.TryParse(ssn.Substring(0, 2), out var day))
+                if (int.TryParse(fodselsNummer.Substring(0, 2), out var day))
                     Day = day;
-                if (int.TryParse(ssn.Substring(2, 2), out var month))
+                if (int.TryParse(fodselsNummer.Substring(2, 2), out var month))
                     Month = month;
-                if (int.TryParse(ssn.Substring(4, 2), out var year))
+                if (int.TryParse(fodselsNummer.Substring(4, 2), out var year))
                     Year = year;
-                if (int.TryParse(ssn.Substring(6, 3), out var individualNumber))
+                if (int.TryParse(fodselsNummer.Substring(6, 3), out var individualNumber))
                     IndividualNumber = individualNumber;
-                if (int.TryParse(ssn.Substring(9, 2), out var checkDigit))
+                if (int.TryParse(fodselsNummer.Substring(9, 2), out var checkDigit))
                     CheckDigit = checkDigit;
 
-                if (int.TryParse(ssn.Substring(9, 1), out var genderDigit))
+                if (int.TryParse(fodselsNummer.Substring(9, 1), out var genderDigit))
                     Gender = genderDigit % 2 == 0 ? Gender.Male : Gender.Female;
 
             }

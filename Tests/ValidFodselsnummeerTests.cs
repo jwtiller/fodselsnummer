@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Fnr;
 using NUnit.Framework;
-using SSN;
 
 namespace Tests
 {
     [TestFixture]
-    public class ValidPersonnummerTests
+    public class ValidFodselsnummeerTests
     {
         [Test, TestCaseSource(nameof(ValidPersonnummer))]
-        public void Valid_Personnummer_ShouldReturnValid(string personNummer)
+        public void Valid_Personnummer_ShouldReturnValid(string fodselsNummer)
         {
-            var ssn = new Personnummer(personNummer);
-            Assert.IsTrue(ssn.IsValid());
+            var fnr = new Fodselsnummer(fodselsNummer);
+            Assert.IsTrue(fnr.IsValid());
         }
 
         #region testdata

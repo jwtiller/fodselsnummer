@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Fnr;
 using NUnit.Framework;
-using SSN;
 
 namespace Tests
 {
@@ -12,10 +12,10 @@ namespace Tests
     public class ToStringTest
     {
         [Test, TestCaseSource(nameof(PersonnummerCases))]
-        public void ToString_ShouldReturnSamePersonnummer(string personNummer)
+        public void ToString_ShouldReturnSamePersonnummer(string fodselsNummer)
         {
-            var ssn = new Personnummer(personNummer);
-            Assert.AreEqual(personNummer,ssn.ToString());
+            var fnr = new Fodselsnummer(fodselsNummer);
+            Assert.AreEqual(fodselsNummer,fnr.ToString());
         }
 
         #region testdata

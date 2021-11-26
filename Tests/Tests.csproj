@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SSN\SSN.csproj" />
+    <ProjectReference Include="..\Fnr\Fnr.csproj" />
   </ItemGroup>
 
 </Project>
