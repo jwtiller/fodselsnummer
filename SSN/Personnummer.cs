@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace SSN
@@ -59,7 +60,7 @@ namespace SSN
                 yearHundred = "18";
             if (IndividualNumber >= 0 && IndividualNumber < 500)
                 yearHundred = "19";
-            return DateOnly.Parse($"{Day}.{Month}.{yearHundred}{Year?.ToString("D2")}");
+            return DateOnly.ParseExact($"{Day?.ToString("D2")}.{Month?.ToString("D2")}.{yearHundred}{Year?.ToString("D2")}", "dd.MM.yyyy", CultureInfo.InvariantCulture);
         }
 
         private void Parse(string ssn)
