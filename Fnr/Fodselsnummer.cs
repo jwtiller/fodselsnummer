@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Fnr
@@ -51,17 +53,11 @@ namespace Fnr
 
         private DateOnly GetBirth()
         {
-            string yearHundred = string.Empty;
-            if (IndividualNumber >= 900 && IndividualNumber < 1000)
-                yearHundred = "19";
-            if (IndividualNumber >= 500 && IndividualNumber < 1000)
-                yearHundred = "20";
-            if (IndividualNumber >= 500 && IndividualNumber < 750)
-                yearHundred = "18";
-            if (IndividualNumber >= 0 && IndividualNumber < 500)
-                yearHundred = "19";
+            var yearHundred = _induvidualNumberYearhundredMapping.FirstOrDefault(x => IndividualNumber >= x.lower && IndividualNumber < x.upper).yearHundred;
             return DateOnly.ParseExact($"{Day?.ToString("D2")}.{Month?.ToString("D2")}.{yearHundred}{Year?.ToString("D2")}", "dd.MM.yyyy", CultureInfo.InvariantCulture);
         }
+
+        private readonly List<(int yearHundred, int lower, int upper)> _induvidualNumberYearhundredMapping = new() { (19, 0, 500),(18, 500, 750),(19, 900, 1000), (20, 500, 1000) };
 
         private void Parse(string fodselsNummer)
         {
