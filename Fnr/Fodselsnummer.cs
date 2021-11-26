@@ -34,21 +34,22 @@ namespace Fnr
 
         public bool IsCheckDigitValid()
         {
-            var c1 = 11 - ((3 * GetDigit(0) + 7 * GetDigit(1) + 6 * GetDigit(2) + 1 * GetDigit(3) + 8 * GetDigit(4) + 9 * GetDigit(5) + 4 * GetDigit(6) + 5 * GetDigit(7) + 2 * GetDigit(8)) % 11);
-            var c2 = 11 - ((5 * GetDigit(0) + 4 * GetDigit(1) + 3 * GetDigit(2) + 2 * GetDigit(3) + 7 * GetDigit(4) + 6 * GetDigit(5) + 5 * GetDigit(6) + 4 * GetDigit(7) + 3 * GetDigit(8) + 2 * c1) % 11);
+            var expected = CalculateCheckDigit($"{Day:D2}{Month:D2}{Year}{IndividualNumber:D3}");
+            return CheckDigit == expected;
+        }
+
+        private static int CalculateCheckDigit(string fnrAndIndividualNumber)
+        {
+            var c1 = 11 - ((3 * Convert.ToInt32(fnrAndIndividualNumber.Substring(0,1)) + 7 * Convert.ToInt32(fnrAndIndividualNumber.Substring(1, 1)) + 6 * Convert.ToInt32(fnrAndIndividualNumber.Substring(2, 1)) + 1 * Convert.ToInt32(fnrAndIndividualNumber.Substring(3, 1)) + 8 * Convert.ToInt32(fnrAndIndividualNumber.Substring(4, 1)) + 9 * Convert.ToInt32(fnrAndIndividualNumber.Substring(5, 1)) + 4 * Convert.ToInt32(fnrAndIndividualNumber.Substring(6, 1)) + 5 * Convert.ToInt32(fnrAndIndividualNumber.Substring(7, 1)) + 2 * Convert.ToInt32(fnrAndIndividualNumber.Substring(8, 1))) % 11);
+            var c2 = 11 - ((5 * Convert.ToInt32(fnrAndIndividualNumber.Substring(0, 1)) + 4 * Convert.ToInt32(fnrAndIndividualNumber.Substring(1, 1)) + 3 * Convert.ToInt32(fnrAndIndividualNumber.Substring(2, 1)) + 2 * Convert.ToInt32(fnrAndIndividualNumber.Substring(3, 1)) + 7 * Convert.ToInt32(fnrAndIndividualNumber.Substring(4, 1)) + 6 * Convert.ToInt32(fnrAndIndividualNumber.Substring(5, 1)) + 5 * Convert.ToInt32(fnrAndIndividualNumber.Substring(6, 1)) + 4 * Convert.ToInt32(fnrAndIndividualNumber.Substring(7, 1)) + 3 * Convert.ToInt32(fnrAndIndividualNumber.Substring(8, 1)) + 2 * c1) % 11);
 
             if (c1 == 11) // special rule
                 c1 = 0;
             if (c2 == 11)
-                c2 = 0; 
+                c2 = 0;
 
             int.TryParse($"{c1}{c2}", out int expected);
-            return CheckDigit == expected;
-        }
-
-        private int GetDigit(int index)
-        {
-            return Convert.ToInt32(_fodselsnummer.Substring(index, 1));
+            return expected;
         }
 
         private DateOnly GetBirth()
@@ -57,7 +58,24 @@ namespace Fnr
             return DateOnly.ParseExact($"{Day?.ToString("D2")}.{Month?.ToString("D2")}.{yearHundred}{Year?.ToString("D2")}", "dd.MM.yyyy", CultureInfo.InvariantCulture);
         }
 
-        private readonly List<(int yearHundred, int lower, int upper)> _induvidualNumberYearhundredMapping = new() { (19, 0, 500),(18, 500, 750),(19, 900, 1000), (20, 500, 1000) };
+        public static Fodselsnummer Generate(DateOnly birth)
+        {
+            var individualNumberRange =
+                _induvidualNumberYearhundredMapping.FirstOrDefault(x =>
+                    x.yearStart >= birth.Year && birth.Year <= x.yearStart);
+            var individualNumber = new Random().Next(individualNumberRange.lower, individualNumberRange.upper);
+
+            var checkDigit = CalculateCheckDigit($"{birth.Day:D2}{birth.Month:D2}{birth.Year.ToString().Substring(0,2)}{individualNumber:D3}");
+            return new Fodselsnummer($"{birth.Day:D2}{birth.Month:D2}{birth.Year.ToString().Substring(0,2)}{individualNumber:D3}{checkDigit:D2}");
+        }
+
+        private static readonly List<(int yearHundred, int yearStart, int yearEnd, int lower, int upper)> _induvidualNumberYearhundredMapping = new()
+        {
+            (19,1900,1999, 0, 500),
+            (18, 1854,1899, 500, 750),
+            (19, 1940,1999, 900, 1000), 
+            (20, 2000,2039,500, 1000)
+        };
 
         private void Parse(string fodselsNummer)
         {
