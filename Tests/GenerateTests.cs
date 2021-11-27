@@ -21,17 +21,21 @@ namespace Tests
         #region testdata
         static IEnumerable<DateOnly> BirthDates()
         {
-            yield return new DateOnly(1854,12,1);
-            yield return new DateOnly(1863, 5, 17);
-            yield return new DateOnly(1901, 8, 12);
-            yield return new DateOnly(1910, 3, 29);
-            yield return new DateOnly(1940, 1, 1);
-            yield return new DateOnly(1952, 11, 3);
-            yield return new DateOnly(1977, 4, 22);
-            yield return new DateOnly(1988, 6, 12);
-            yield return new DateOnly(2001, 10, 23);
-            yield return new DateOnly(2005, 7, 27);
-            yield return new DateOnly(2015, 10, 5);
+            var ranges = new[] { (1885, 1887), (1940,1945), (1955,1960),(1971,1973),(1985,1990),(2000,2001),(2005,2007) };
+            foreach (var range in ranges)
+            {
+                for (int year = range.Item1; year <= range.Item2; year++)
+                {
+                    for (int month = 1; month <= 12; month++)
+                    {
+                        for (int day = 1; day <= DateTime.DaysInMonth(year, month); day++)
+                        {
+                            yield return new DateOnly(year, month, day);
+                        }
+                    }
+
+                }
+            }
         }
         #endregion
 
