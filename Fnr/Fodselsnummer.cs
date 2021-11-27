@@ -35,6 +35,9 @@ namespace Fnr
         public bool IsCheckDigitValid()
         {
             var expected = CalculateCheckDigit($"{Day:D2}{Month:D2}{Year}{IndividualNumber:D3}");
+            if (CheckDigit != expected)
+            {
+            }
             return CheckDigit == expected;
         }
 
@@ -62,10 +65,17 @@ namespace Fnr
         {
             var individualNumberRange =
                 _induvidualNumberYearhundredMapping.FirstOrDefault(x =>
-                    x.yearStart >= birth.Year && birth.Year <= x.yearStart);
-            var individualNumber = new Random().Next(individualNumberRange.lower, individualNumberRange.upper);
+                    x.yearStart <= birth.Year && birth.Year <= x.yearEnd);
+            int individualNumber = 0;
+            int checkDigit = 0;
+            while (checkDigit.Length() != 2) // if generates check digit length of 3 in odd cases
+            {
+                individualNumber = new Random().Next(individualNumberRange.lower, individualNumberRange.upper);
+                checkDigit =
+                    CalculateCheckDigit(
+                        $"{birth.Day:D2}{birth.Month:D2}{birth.Year.ToString().Substring(0, 2)}{individualNumber:D3}");
+            }
 
-            var checkDigit = CalculateCheckDigit($"{birth.Day:D2}{birth.Month:D2}{birth.Year.ToString().Substring(0,2)}{individualNumber:D3}");
             return new Fodselsnummer($"{birth.Day:D2}{birth.Month:D2}{birth.Year.ToString().Substring(0,2)}{individualNumber:D3}{checkDigit:D2}");
         }
 
