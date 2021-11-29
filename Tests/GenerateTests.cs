@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Fnr;
@@ -18,27 +19,49 @@ namespace Tests
             Assert.IsTrue(fnr.IsValid());
         }
 
+        [Test, TestCaseSource(nameof(BirthDates))]
+        public void GeneratedFodselsnummer_ShouldOnlyReturn_Male(DateOnly birth)
+        {
+            var fnr = Fodselsnummer.Generate(birth, Gender.Male);
+            Assert.AreEqual(Gender.Male, fnr.Gender);
+        }
+
+        [Test, TestCaseSource(nameof(BirthDates))]
+        public void GeneratedFodselsnummer_ShouldOnlyReturn_Female(DateOnly birth)
+        {
+            var fnr = Fodselsnummer.Generate(birth, Gender.Female);
+            Assert.AreEqual(Gender.Female, fnr.Gender);
+        }
+
         #region testdata
         static IEnumerable<DateOnly> BirthDates()
         {
-            var ranges = new[] { (1885, 1887), (1940,1945), (1955,1960),(1971,1973),(1985,1990),(2000,2001),(2005,2007) };
-            foreach (var range in ranges)
+            var items = new List<DateOnly>();
+            for (int year = 1884; year <= DateTime.Now.Year; year++)
             {
-                for (int year = range.Item1; year <= range.Item2; year++)
+                for (int month = 1; month <= 12; month++)
                 {
-                    for (int month = 1; month <= 12; month++)
+                    for (int day = 1; day <= DateTime.DaysInMonth(year, month); day++)
                     {
-                        for (int day = 1; day <= DateTime.DaysInMonth(year, month); day++)
-                        {
-                            yield return new DateOnly(year, month, day);
-                        }
+                        items.Add(new DateOnly(year, month, day));
                     }
-
                 }
+
             }
+            Shuffle(items);
+            return items.Take(500);
         }
         #endregion
 
+
+        public static void Shuffle<T>(IList<T> list)
+        {
+            for (int n = list.Count-1; n > 1; n--)
+            {
+                int k = RandomNumberGenerator.GetInt32(n + 1);
+                (list[k], list[n]) = (list[n], list[k]);
+            }
+        }
 
     }
 }

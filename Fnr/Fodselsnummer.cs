@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 namespace Fnr
@@ -61,7 +62,7 @@ namespace Fnr
             return DateOnly.ParseExact($"{Day?.ToString("D2")}.{Month?.ToString("D2")}.{yearHundred}{Year?.ToString("D2")}", "dd.MM.yyyy", CultureInfo.InvariantCulture);
         }
 
-        public static Fodselsnummer Generate(DateOnly birth)
+        public static Fodselsnummer Generate(DateOnly birth, Gender gender = Gender.Undefined)
         {
             var individualNumberRange =
                 _induvidualNumberYearhundredMapping.FirstOrDefault(x =>
@@ -70,13 +71,28 @@ namespace Fnr
             int checkDigit = 0;
             while (checkDigit.Length() != 2) // if generates check digit length of 3 in odd cases
             {
-                individualNumber = new Random().Next(individualNumberRange.lower, individualNumberRange.upper);
+                individualNumber = RandomNumber(individualNumberRange.lower, individualNumberRange.upper, gender);
                 checkDigit =
                     CalculateCheckDigit(
                         $"{birth.Day:D2}{birth.Month:D2}{birth.Year.ToString().Substring(0, 2)}{individualNumber:D3}");
             }
 
             return new Fodselsnummer($"{birth.Day:D2}{birth.Month:D2}{birth.Year.ToString().Substring(0,2)}{individualNumber:D3}{checkDigit:D2}");
+        }
+
+        private static int RandomNumber(int from, int to, Gender gender)
+        {
+            int rnd = RandomNumberGenerator.GetInt32(from, to);
+            if (gender == Gender.Undefined)
+                return rnd;
+            bool even = rnd.Split().Last() % 2 == 0;
+            while ((even && gender == Gender.Male) || (!even && gender == Gender.Female))
+            {
+                rnd = RandomNumberGenerator.GetInt32(from, to);
+                even = rnd.Split().Last() % 2 == 0;
+            }
+
+            return rnd;
         }
 
         private static readonly List<(int yearHundred, int yearStart, int yearEnd, int lower, int upper)> _induvidualNumberYearhundredMapping = new()
@@ -86,6 +102,7 @@ namespace Fnr
             (19, 1940,1999, 900, 1000), 
             (20, 2000,2039,500, 1000)
         };
+
 
         private void Parse(string fodselsNummer)
         {
@@ -102,8 +119,8 @@ namespace Fnr
                 if (int.TryParse(fodselsNummer.Substring(9, 2), out var checkDigit))
                     CheckDigit = checkDigit;
 
-                if (int.TryParse(fodselsNummer.Substring(9, 1), out var genderDigit))
-                    Gender = genderDigit % 2 == 0 ? Gender.Male : Gender.Female;
+                if (int.TryParse(fodselsNummer.Substring(8, 1), out var genderDigit))
+                    Gender = genderDigit % 2 == 0 ? Gender.Female : Gender.Male;
 
             }
         }
