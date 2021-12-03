@@ -6,6 +6,7 @@
 	 <Authors>Jon Tiller</Authors>
 	 <Company>Jon Tiller</Company>
     <Version>0.0.1</Version>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
 </Project>
