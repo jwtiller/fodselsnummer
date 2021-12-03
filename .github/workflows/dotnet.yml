@@ -17,6 +17,8 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
+    - name: Set VERSION variable from tag
+      run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
@@ -24,4 +26,6 @@ jobs:
     - name: Run tests
       run: dotnet test --no-build --verbosity normal
     - name: Nuget pack
-      run: dotnet pack -c Release -o out
+      run: dotnet pack -c Release -o out -p:PackageVersion={VERSION}
+    - name: Nuget publish
+      run: dotnet nuget push ./out/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} -p:PackageID=Norske.Fodselsnummer --no-symbols true --skip-duplicate
