@@ -26,4 +26,4 @@ jobs:
     - name: Nuget pack
       run: dotnet pack -c Release -o out
     - name: Nuget publish
-      run: dotnet nuget push ./out/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} -p:PackageID=Norske.Fodselsnummer --no-symbols true --skip-duplicate
+      run: dotnet nuget push ./out/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --no-symbols true --skip-duplicate
